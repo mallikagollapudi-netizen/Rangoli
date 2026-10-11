@@ -32,9 +32,11 @@ jobs:
           packager: npm
 
       - name: Install dependencies
+        working-directory: ./frontend
         run: npm install
 
       - name: Configure Expo for APK
+        working-directory: ./frontend
         run: |
           echo '{
             "build": {
@@ -47,10 +49,11 @@ jobs:
           }' > eas.json
 
       - name: Build the APK
+        working-directory: ./frontend
         run: eas build --platform android --profile preview --local --output rangoli.apk
 
       - name: Upload Finished File
         uses: actions/upload-artifact@v4
         with:
           name: rangoli-apk
-          path: rangoli.apk
+          path: frontend/rangoli.apk
