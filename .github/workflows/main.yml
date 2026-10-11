@@ -45,6 +45,7 @@ jobs:
           echo '{
             "build": {
               "preview": {
+                "distribution": "internal",
                 "android": {
                   "buildType": "apk"
                 }
