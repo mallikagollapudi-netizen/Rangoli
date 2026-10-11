@@ -9,7 +9,8 @@ Palette + custom colour wheel · Save to gallery with name (reloadable) · Festi
 
 ## Architecture
 - Expo Router (stack): `/` home, `/dot-setup` (modal), `/canvas` (free/dot, ?id to reopen), `/gallery`
-- Fully offline: artworks stored as vector JSON on device (`src/api.ts` → `@/src/utils/storage`, key `rangoli.artworks.v1`). Backend not used.
+- Fully offline: artworks stored as vector JSON on device (`src/api.ts` → `@/src/utils/storage`, key `rangoli.artworks.v1`).
+- Backend retired (Oct 2026): server.py is a 410 stub, service removed from supervisor; nothing served on the internet.
 - Drawing: react-native-svg + RN touch responder (pageX/pageY on a full-screen canvas). Fonts and images bundled locally.
 
 ## Implemented (Oct 2026)
