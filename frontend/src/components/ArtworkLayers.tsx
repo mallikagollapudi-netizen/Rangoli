@@ -23,11 +23,11 @@ export const DotsLayer = memo(function DotsLayer({
   );
 });
 
-export function StrokePath({ stroke }: { stroke: Stroke }) {
+export function StrokePath({ stroke, background }: { stroke: Stroke; background: string }) {
   return (
     <Path
       d={pathFromPoints(stroke.points, stroke.kind)}
-      stroke={stroke.color}
+      stroke={stroke.kind === "erase" ? background : stroke.color}
       strokeWidth={stroke.width}
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -36,11 +36,11 @@ export function StrokePath({ stroke }: { stroke: Stroke }) {
   );
 }
 
-export const StrokesLayer = memo(function StrokesLayer({ strokes }: { strokes: Stroke[] }) {
+export const StrokesLayer = memo(function StrokesLayer({ strokes, background }: { strokes: Stroke[]; background: string }) {
   return (
     <G>
       {strokes.map((s, i) => (
-        <StrokePath key={i} stroke={s} />
+        <StrokePath key={i} stroke={s} background={background} />
       ))}
     </G>
   );

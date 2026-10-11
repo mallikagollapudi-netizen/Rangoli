@@ -11,8 +11,8 @@ export function ArtworkThumb({ art, size }: { art: Artwork; size: number }) {
     <View style={{ width: size, height: size, backgroundColor: art.background }}>
       <Svg width={size} height={size} viewBox={`0 0 ${art.width} ${art.height}`} preserveAspectRatio="xMidYMid slice">
         <Rect x={0} y={0} width={art.width} height={art.height} fill={art.background} />
+        <StrokesLayer strokes={art.strokes} background={art.background} />
         {grid && <DotsLayer dots={grid.dots} spacing={grid.spacing} background={art.background} />}
-        <StrokesLayer strokes={art.strokes} />
       </Svg>
     </View>
   );

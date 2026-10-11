@@ -1,12 +1,13 @@
 import * as Haptics from "expo-haptics";
 import React, { useRef, useState } from "react";
 import { GestureResponderEvent, Platform, StyleSheet, View } from "react-native";
-import Svg, { Line, Rect } from "react-native-svg";
+import Svg, { Circle, Line, Rect } from "react-native-svg";
 
 import { Point, Stroke, StrokeKind } from "../drawing";
 import { DotsLayer, StrokePath, StrokesLayer } from "./ArtworkLayers";
 
 type Props = {
+  viewRef?: React.Ref<View>;
   screen: { w: number; h: number }; // full-screen canvas size (touch space)
   logical: { w: number; h: number }; // drawing coordinate space
   background: string;
@@ -18,6 +19,8 @@ type Props = {
   width: number;
   onStrokeEnd: (s: Stroke) => void;
 };
+
+export const ERASER_SCALE = 3;
 
 function haptic() {
   if (Platform.OS !== "web") Haptics.selectionAsync();
@@ -50,6 +53,9 @@ export function DrawingCanvas(props: Props) {
     return best;
   };
 
+  // Min distance between sampled points; curves sample sparser for smoothness.
+  const minStep = (kind: StrokeKind) => (kind === "curve" ? Math.max(6, spacing * 0.15) : 1.5);
+
   const begin = (e: GestureResponderEvent) => {
     const p = toLogical(e);
     const { tool, color, width } = props;
@@ -58,10 +64,15 @@ export function DrawingCanvas(props: Props) {
       if (!d) return;
       haptic();
       strokeRef.current = { kind: "line", color, width, points: [d] };
-      setFinger(p);
     } else {
-      strokeRef.current = { kind: "free", color, width, points: [p] };
+      strokeRef.current = {
+        kind: tool,
+        color: tool === "erase" ? "" : color,
+        width: tool === "erase" ? width * ERASER_SCALE : width,
+        points: [p],
+      };
     }
+    setFinger(p);
     setCurrent({ ...strokeRef.current });
   };
 
@@ -77,11 +88,11 @@ export function DrawingCanvas(props: Props) {
         haptic();
         setCurrent({ ...s, points: [...s.points] });
       }
-      setFinger(p);
-    } else if (Math.hypot(p[0] - last[0], p[1] - last[1]) > 1.5) {
+    } else if (Math.hypot(p[0] - last[0], p[1] - last[1]) > minStep(s.kind)) {
       s.points.push(p);
       setCurrent({ ...s, points: [...s.points] });
     }
+    setFinger(p);
   };
 
   const end = () => {
@@ -98,6 +109,8 @@ export function DrawingCanvas(props: Props) {
 
   return (
     <View
+      ref={props.viewRef}
+      collapsable={false}
       testID="drawing-canvas"
       style={[styles.fill, { width: screen.w, height: screen.h, backgroundColor: background }]}
       onStartShouldSetResponder={() => true}
@@ -116,9 +129,10 @@ export function DrawingCanvas(props: Props) {
         style={styles.noTouch}
       >
         <Rect x={0} y={0} width={logical.w} height={logical.h} fill={background} />
+        <StrokesLayer strokes={strokes} background={background} />
+        {current && <StrokePath stroke={current} background={background} />}
+        {/* Dots stay on top so the eraser never removes them */}
         {dots.length > 0 && <DotsLayer dots={dots} spacing={spacing} background={background} />}
-        <StrokesLayer strokes={strokes} />
-        {current && <StrokePath stroke={current} />}
         {current?.kind === "line" && lastPt && finger && (
           <Line
             x1={lastPt[0]}
@@ -131,6 +145,9 @@ export function DrawingCanvas(props: Props) {
             strokeDasharray={`${current.width * 1.5} ${current.width * 1.5}`}
             strokeLinecap="round"
           />
+        )}
+        {current?.kind === "erase" && finger && (
+          <Circle cx={finger[0]} cy={finger[1]} r={current.width / 2} fill="none" stroke="#FFFFFF" strokeOpacity={0.7} strokeWidth={1.5} />
         )}
       </Svg>
     </View>

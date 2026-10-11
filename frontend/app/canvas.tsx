@@ -6,10 +6,9 @@ import {
   ArrowCounterClockwise,
   ArrowLeft,
   FloppyDisk,
-  LineSegments,
-  PaintBrush,
   PaintBucket,
   Palette,
+  ShareNetwork,
   Trash,
 } from "phosphor-react-native";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -21,6 +20,8 @@ import { api } from "@/src/api";
 import { ColorWheelSheet } from "@/src/components/ColorWheelSheet";
 import { DrawingCanvas } from "@/src/components/DrawingCanvas";
 import { SaveSheet } from "@/src/components/SaveSheet";
+import { ShareSheet } from "@/src/components/ShareSheet";
+import { TOOL_META, ToolPicker } from "@/src/components/ToolPicker";
 import {
   BRUSH_SIZES,
   FLOORS,
@@ -76,6 +77,9 @@ export default function CanvasScreen() {
   const [color, setColor] = useState(PALETTE[0]);
   const [sizeIdx, setSizeIdx] = useState(1);
   const [tool, setTool] = useState<StrokeKind>(params.mode === "dot" ? "line" : "free");
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const canvasRef = useRef<View>(null);
   const [loading, setLoading] = useState(!!params.id);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [wheelOpen, setWheelOpen] = useState(false);
@@ -177,6 +181,7 @@ export default function CanvasScreen() {
     <View style={[styles.root, { backgroundColor: background }]} testID="canvas-screen">
       {!loading && (
         <DrawingCanvas
+          viewRef={canvasRef}
           screen={screen}
           logical={logical}
           background={background}
@@ -202,6 +207,11 @@ export default function CanvasScreen() {
           <Text numberOfLines={1} style={styles.titleText} testID="canvas-title">
             {name || (mode === "dot" ? "Dot rangoli" : "Free art")}
           </Text>
+        </Glass>
+        <Glass style={styles.roundBtn}>
+          <Pressable testID="canvas-share-btn" onPress={() => setShareOpen(true)} style={styles.roundInner}>
+            <ShareNetwork size={22} color={colors.onSurface} weight="bold" />
+          </Pressable>
         </Glass>
         <Pressable
           testID="canvas-save-btn"
@@ -244,24 +254,16 @@ export default function CanvasScreen() {
           ))}
         </ScrollView>
         <View style={styles.toolsRow}>
-          {mode === "dot" && (
-            <ToolBtn
-              testID="canvas-tool-toggle-btn"
-              active
-              label={tool === "line" ? "Join dots" : "Brush"}
-              onPress={() => {
-                tap();
-                setTool((t) => (t === "line" ? "free" : "line"));
-              }}
-              icon={
-                tool === "line" ? (
-                  <LineSegments size={22} color={colors.onBrandPrimary} weight="bold" />
-                ) : (
-                  <PaintBrush size={22} color={colors.onBrandPrimary} weight="fill" />
-                )
-              }
-            />
-          )}
+          <ToolBtn
+            testID="canvas-tool-toggle-btn"
+            active
+            label={TOOL_META[tool].label}
+            onPress={() => {
+              tap();
+              setToolsOpen((o) => !o);
+            }}
+            icon={React.createElement(TOOL_META[tool].Icon, { size: 22, color: colors.onBrandPrimary, weight: "fill" })}
+          />
           <ToolBtn
             testID="canvas-brush-size-btn"
             label={`Size ${brush}`}
@@ -330,6 +332,19 @@ export default function CanvasScreen() {
         </Animated.View>
       )}
 
+      {toolsOpen && (
+        <ToolPicker
+          tools={mode === "dot" ? ["line", "curve", "free", "erase"] : ["free", "curve", "erase"]}
+          value={tool}
+          bottom={insets.bottom + 12 + BOTTOM_PANEL + 8}
+          onPick={(t) => {
+            tap();
+            setTool(t);
+            setToolsOpen(false);
+          }}
+        />
+      )}
+
       {exitOpen && (
         <View style={styles.exitOverlay} testID="canvas-exit-sheet">
           <Pressable style={styles.exitBackdrop} onPress={() => setExitOpen(false)} testID="canvas-exit-backdrop" />
@@ -360,6 +375,13 @@ export default function CanvasScreen() {
         </View>
       )}
 
+      <ShareSheet
+        visible={shareOpen}
+        target={canvasRef}
+        name={name}
+        onClose={() => setShareOpen(false)}
+        onDone={showToast}
+      />
       <ColorWheelSheet visible={wheelOpen} initial={color} onClose={() => setWheelOpen(false)} onPick={setColor} />
       <SaveSheet
         visible={saveOpen}

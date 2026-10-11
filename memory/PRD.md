@@ -18,7 +18,9 @@ Palette + custom colour wheel · Save to gallery with name (reloadable) · Festi
 - Canvas: brush, join-dots snapping, 16 festive swatches + colour wheel, brush sizes, floor colours, undo, clear
 - Save on device with name, exit sheet (Save on device / Delete / Keep drawing), gallery with reopen/edit/delete
 
+- Tool picker: Join dots, Curve (smooth kolam loops), Brush, Eraser (paints floor colour, dots stay on top)
+- Share as image: Save to Photos (expo-media-library with permission flow) and system share sheet (WhatsApp etc.); web falls back to PNG download
+
 ## Backlog
 - P1: Symmetry/mirror drawing (4/8-way) for rangoli patterns
-- P1: Export/share as PNG image
-- P2: Eraser tool, curved lines between dots, fill areas
+- P2: Fill areas, migrate media library to the new API

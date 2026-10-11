@@ -1,5 +1,6 @@
 export type Point = [number, number];
-export type StrokeKind = "free" | "line";
+// free = brush, line = straight dot-to-dot, curve = smooth kolam loop, erase = paints the floor colour
+export type StrokeKind = "free" | "line" | "curve" | "erase";
 export type Stroke = { color: string; width: number; kind: StrokeKind; points: Point[] };
 export type GridLayout = "square" | "rotated" | "triangle";
 export type GridConfig = {
@@ -89,6 +90,22 @@ export function pathFromPoints(points: Point[], kind: StrokeKind): string {
   if (points.length === 1) return `M${x0} ${y0} L${x0 + 0.01} ${y0}`;
   if (kind === "line" || points.length < 3) {
     return `M${x0} ${y0} ` + points.slice(1).map(([x, y]) => `L${x} ${y}`).join(" ");
+  }
+  if (kind === "curve") {
+    // Catmull-Rom spline through the sampled points for smooth loops.
+    let d = `M${x0} ${y0}`;
+    for (let i = 0; i < points.length - 1; i++) {
+      const p0 = points[i - 1] ?? points[i];
+      const p1 = points[i];
+      const p2 = points[i + 1];
+      const p3 = points[i + 2] ?? p2;
+      const c1x = p1[0] + (p2[0] - p0[0]) / 6;
+      const c1y = p1[1] + (p2[1] - p0[1]) / 6;
+      const c2x = p2[0] - (p3[0] - p1[0]) / 6;
+      const c2y = p2[1] - (p3[1] - p1[1]) / 6;
+      d += ` C${c1x} ${c1y} ${c2x} ${c2y} ${p2[0]} ${p2[1]}`;
+    }
+    return d;
   }
   let d = `M${x0} ${y0}`;
   for (let i = 1; i < points.length - 1; i++) {

@@ -9,14 +9,22 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.emergent.rangoliapp.zs97kc"
+      "bundleIdentifier": "com.emergent.rangoliapp.zs97kc",
+      "infoPlist": {
+        "NSPhotoLibraryAddUsageDescription": "Save your rangoli designs to your Photos",
+        "NSPhotoLibraryUsageDescription": "Save your rangoli designs to your Photos"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#FFF9F2"
       },
-      "package": "com.emergent.rangoliapp.zs97kc"
+      "package": "com.emergent.rangoliapp.zs97kc",
+      "permissions": [
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_IMAGES"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -38,7 +46,19 @@
       "expo-image",
       "expo-secure-store",
       "expo-web-browser",
-      "expo-status-bar"
+      "expo-status-bar",
+      "expo-sharing",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Save your rangoli designs to your Photos",
+          "savePhotosPermission": "Save your rangoli designs to your Photos",
+          "isAccessMediaLocationEnabled": false,
+          "granularPermissions": [
+            "photo"
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
