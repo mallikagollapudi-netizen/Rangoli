@@ -1,0 +1,31 @@
+{
+  "summary": "All critical bug fixes verified end-to-end on web preview (390x844). Drawing works (mouse drag on drawing-canvas produces <path> stroke). Dots render immediately in dot mode (7x7 square = 49 circles verified). Save flow fully functional: save-confirm-btn now INSIDE viewport (bbox y=776, bottom=828, vh=844) — iteration-3 off-viewport bug is FIXED by the explicit window-height on web Modal wrapper in both SaveSheet and ColorWheelSheet. Toast 'Saved on device' displayed. localStorage key 'rangoli.artworks.v1' persisted (542 bytes). ColorWheelSheet: color-wheel bbox {x:55,y:432,w:280,h:280,inView:true}; apply btn {x:213,y:780,inView:true}; tap on wheel updated hex to #80F20D; Apply closed sheet and canvas-custom-swatch appeared. Exit flow verified: unsaved -> canvas-exit-sheet opens, cancel keeps drawing, save routes home after save. Gallery flow: item visible, delete-confirm shown, after delete gallery-empty rendered. ZERO /api network calls intercepted across whole session (fully offline confirmed). Join dots is default in dot mode; canvas-tool-toggle-btn toggles to Brush. Deprecated warnings detected (non-blocking, consistent with iteration 3 note): 'shadow* style props deprecated. Use boxShadow.' and 'props.pointerEvents is deprecated. Use style.pointerEvents.'",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "react_native_issues": [
+      {"component": "SaveSheet / ColorWheelSheet / possibly BlurView wrappers", "issue": "Console warnings: 'shadow*' style props are deprecated. Use 'boxShadow'. Non-blocking per instructions but should be migrated. Reference: inspect any component using shadowColor/shadowOffset/shadowOpacity/shadowRadius (likely glass/card styles)."},
+      {"component": "canvas.tsx top bar wrapper (pointerEvents prop)", "issue": "Warning: 'props.pointerEvents is deprecated. Use style.pointerEvents'. Reference: /app/frontend/app/canvas.tsx:195 uses pointerEvents=\"box-none\" as a prop; migrate to style={{ pointerEvents: 'box-none' }}."}
+    ]
+  },
+  "test_report_links": ["/app/test_reports/iteration_4.json"],
+  "action_items": [
+    "Optional: migrate deprecated 'shadow*' style props to 'boxShadow' and move 'pointerEvents' prop to style.pointerEvents in canvas.tsx:195. Non-blocking.",
+    "No functional fixes required. All reported bugs (drawing, dot rendering, save-on-device choice, delete-on-exit, color wheel apply, gallery delete/empty) are resolved."
+  ],
+  "critical_code_review_comments": [
+    "SaveSheet.tsx:29 and ColorWheelSheet.tsx:81 both apply `Platform.OS === 'web' && { height: winH }` to bound Modal content to viewport — this is the correct fix and visibly resolves the iteration-3 layout bug.",
+    "DrawingCanvas.tsx uses onStartShouldSetResponder/onResponderGrant/Move/Release with pageX/pageY and useWindowDimensions-based screen size; mouse drag on web successfully creates strokes (verified <path> count = 1).",
+    "api.ts update(id,...) preserves id (no duplicate); gallery delete flow writes back without the removed id (verified via gallery-empty appearing after single-item delete).",
+    "Iteration-3 blocker is fully resolved: both modals report inView:true for all critical interactive elements on 390x844 viewport."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (offline, zero /api calls)", "frontend": "100% of in-scope flows — draw, save, toast, home-recent, persistence, gallery, delete, gallery-empty, color wheel pick+apply+custom swatch, exit sheet (save/delete/cancel), dot mode default (square 49 dots), join-dots -> Brush toggle"},
+  "seed_data_creation": "Created 1 artwork 'TEST_Lotus' during save test, then deleted it via gallery flow — final state: gallery-empty. Browser localStorage is clean after test.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Iteration-3 modal-off-viewport bug fully fixed via `Platform.OS === 'web' && { height: winH }` on Modal wrapper in SaveSheet.tsx:29 and ColorWheelSheet.tsx:81. Confirmed zero /api calls (fully offline). Only remaining items are non-blocking deprecation warnings. Rotated/Triangle dot-grid layouts weren't exercised in Playwright because the layout buttons share text with the home card subtitle ('Square, 45° rotated or triangle dot grids'); when retesting, scope the locator to the dot-setup modal via a testID (e.g., add testIDs dot-layout-square/rotated/triangle on the layout chips in app/dot-setup.tsx) or click by exact match within the setup container.",
+  "rca_of_issue": "Not applicable — all previously reported bugs are fixed. Prior RCA (iteration 3): Modal wrap flex:1 collapsed to content height on react-native-web; fix was to give the wrap an explicit window height on web (height: winH), which pins the sheet to viewport bottom and keeps interactive children inside the 390x844 viewport. Verified: save-confirm-btn bbox {y:776,h:52,vh:844} inView; color-wheel bbox {y:432,h:280} inView; apply btn {y:780,h:48} inView."
+}

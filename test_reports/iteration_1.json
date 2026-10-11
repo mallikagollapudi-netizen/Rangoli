@@ -1,0 +1,45 @@
+{
+  "summary": "Backend /api/artworks CRUD fully verified (13/13 pytest cases pass). Frontend home/dot-setup/canvas drawing/palette/clear/undo/floor/brush-size tap flows, dot layouts (square, rotated, triangle), dot stepper updates, triangle cols hidden, and join-dots drag all working. BLOCKED on two frontend bugs: (1) SaveSheet 'Save rangoli' button is pushed out of 390x844 viewport (likely KeyboardAvoidingView padding + autoFocus) which blocks saving via UI, and (2) ColorWheelSheet raises a dev console error 'Unknown event handler property onResponderTerminate' because <Path onPress=.../> from react-native-svg does not translate to DOM on web; this overlay blocks subsequent taps after any color-wheel-apply. As a result, UI-driven save->gallery->reopen->delete flow was not fully verified end-to-end, though backend DELETE/GET for TEST_ items confirms the API path works.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "SaveSheet", "issue": "save-confirm-btn (Save rangoli) is reported by Playwright as 'outside of the viewport' on 390x844. KeyboardAvoidingView behavior='padding' + TextInput autoFocus likely injects bottom padding equal to the virtual keyboard, pushing the Pressable below the fold. Users on short devices or web preview cannot tap Save. Reference: /app/frontend/src/components/SaveSheet.tsx:45-52", "testID": "save-confirm-btn", "priority": "CRITICAL"},
+      {"component": "ColorWheelSheet", "issue": "<Path onPress={...}> emits React Native responder events (onResponderTerminate) which react-native-web rejects as 'Unknown event handler property'. In Expo dev build this surfaces as a full-screen Console Error overlay that blocks all further taps after opening/applying the wheel. Fix: wrap the segment Path in a Pressable, or use web-safe onClick/onPressIn via Platform.select. Reference: /app/frontend/src/components/ColorWheelSheet.tsx:79", "testID": "color-wheel-apply-btn", "priority": "HIGH"}
+    ],
+    "integration_issues": [
+      {"flow": "canvas-save -> toast -> gallery item", "issue": "Could not confirm from UI because save-confirm-btn offscreen; TextInput onSubmitEditing on Enter also did not trigger save in web preview. Backend persists correctly via direct API tests.", "affected_testIDs": ["save-confirm-btn", "canvas-toast", "gallery-item-{id}"]}
+    ],
+    "design_issues": [
+      {"screen": "SaveSheet", "issues": ["Button placement should respect safe-area + KeyboardAvoidingView correctly; consider behavior='height' on web or wrap button inside a ScrollView; or add contentContainerStyle padding to keep button visible when keyboard open."]}
+    ],
+    "react_native_issues": [
+      {"component": "ColorWheelSheet (react-native-svg Path.onPress)", "issue": "react-native-svg web adapter does not support onPress on <Path>; produces Unknown event handler onResponderTerminate warnings. Use Pressable overlay or convert to <path onClick=...>. Reference: /app/frontend/src/components/ColorWheelSheet.tsx:79"}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_artworks.py",
+    "/app/backend/tests/conftest.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Fix SaveSheet: ensure save-confirm-btn stays inside viewport on 390x844 (adjust KeyboardAvoidingView behavior / add ScrollView / reduce autoFocus-triggered padding).",
+    "Fix ColorWheelSheet: replace <Path onPress> with Pressable wrappers or use Platform-specific onClick to avoid onResponderTerminate console-error overlay on web.",
+    "Re-run end-to-end UI save->gallery flow after both fixes to confirm toast 'Saved to gallery' appears and item shows up in /gallery."
+  ],
+  "critical_code_review_comments": [
+    "backend/server.py: Artwork.id uses AliasChoices('_id','id') and serialize_by_alias=False, so responses correctly omit _id (verified). Good.",
+    "backend/server.py uses deprecated @app.on_event('shutdown'); consider FastAPI lifespan handler.",
+    "ColorWheelSheet: <Path onPress> is not web-safe (see react_native_issues).",
+    "SaveSheet: KeyboardAvoidingView+autoFocus causes button to be offscreen on short viewports."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_artworks.py",
+    "/app/backend/tests/conftest.py"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "~75% (core drawing, dot setup, join-dots, navigation OK; save->gallery flow blocked by two UI bugs)"},
+  "seed_data_creation": "Backend tests create TEST_FreeArt1 and TEST_DotRangoli1 artworks and clean them up in teardown.",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Backend CRUD solid. For frontend, pytest.ini forces -n 2 --dist loadscope. Use `pytest -n 0` for serial run or ensure teardown_module doesn't delete items while another worker is still using them. Save flow needs retest once SaveSheet keyboard padding bug + ColorWheelSheet Path.onPress bug are fixed. Avoid opening the color wheel in a test run that must proceed afterwards until the second bug is fixed.",
+  "rca_of_issue": "SaveSheet: Modal + KeyboardAvoidingView(behavior='padding') + autoFocus TextInput increases bottom padding by virtual keyboard height on web, shifting the Pressable Save button below the viewport bottom. Playwright reports 'Element is outside of the viewport' even after scrollIntoView. ColorWheelSheet: react-native-svg's web shim forwards RN responder lifecycle props (onResponderTerminate, onStartShouldSetResponder, etc.) to the underlying <path> SVG DOM element, which react-dom logs as 'Unknown event handler property'. In Expo dev client this is intercepted and displayed as a Console Error overlay (LogBox) that captures pointer events and blocks subsequent taps. Mitigation: wrap each colour wedge in a Pressable sitting on top of the SVG or use a web-only onClick handler, and use ScrollView inside SaveSheet so the Save button is always reachable."
+}

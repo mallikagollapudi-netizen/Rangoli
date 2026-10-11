@@ -1,0 +1,155 @@
+{
+  "app_name": "Rangoli Studio",
+  "personality": "4 Tactile interaction with 8 Hand-Drawn cultural warmth",
+  "personality_one_liner": "An inviting, tactile canvas rooted in the warm, festive aesthetics of Indian courtyard art, letting creativity flow naturally.",
+  "color": {
+    "surface": "#FFF9F2",
+    "onSurface": "#3D261D",
+    "surfaceSecondary": "#F5EDE3",
+    "onSurfaceSecondary": "#3D261D",
+    "surfaceTertiary": "#EBE1D5",
+    "onSurfaceTertiary": "#3D261D",
+    "surfaceInverse": "#3D261D",
+    "onSurfaceInverse": "#FFF9F2",
+    "brand": "#D9381E",
+    "brandPrimary": "#D9381E",
+    "onBrandPrimary": "#FFF9F2",
+    "brandSecondary": "#F2A900",
+    "onBrandSecondary": "#3D261D",
+    "brandTertiary": "#8C3123",
+    "onBrandTertiary": "#FFF9F2",
+    "success": "#2A7B4C",
+    "onSuccess": "#FFFFFF",
+    "warning": "#F2A900",
+    "onWarning": "#3D261D",
+    "error": "#D9381E",
+    "onError": "#FFFFFF",
+    "info": "#A6978A",
+    "onInfo": "#FFFFFF",
+    "border": "#EBE1D5",
+    "borderStrong": "#A6978A",
+    "divider": "#EBE1D5",
+    "muted": "#85776C",
+    "onBrand": "#FFF9F2"
+  },
+  "typography": {
+    "displayFontFamily": "Fraunces",
+    "textFontFamily": "Nunito",
+    "scale": {
+      "sm": 12,
+      "base": 14,
+      "lg": 16,
+      "xl": 20,
+      "2xl": 24
+    }
+  },
+  "spacing": {
+    "rule": "Maintain generous, breathable padding (lg/xl) for containers to echo the open space of a courtyard. Use md spacing for grouping related controls. Toolbar actions should have 44x44 minimum touch targets.",
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "2xl": 32,
+    "3xl": 48
+  },
+  "radius_tokens": {
+    "sm": 8,
+    "md": 16,
+    "lg": 24,
+    "pill": 999
+  },
+  "shadow_tier": "2",
+  "navigation": "stack_only",
+  "icon_set": "Phosphor",
+  "glassmorphism": {
+    "enabled": "true",
+    "do's": [
+      "Use heavy glassmorphism for the floating toolbar over the canvas so it separates cleanly from the user's drawing.",
+      "Use glassmorphism for the dot grid setup bottom sheet when overlaid on the canvas."
+    ],
+    "dont's": [
+      "Do not use glassmorphism on the main Home cards.",
+      "Do not blur the actual canvas or drawing elements."
+    ]
+  },
+  "platform_libraries": {
+    "glass": {
+      "ios": "expo-glass-effect",
+      "android": "expo-blur",
+      "low_end_android_fallback": "solid surfaceSecondary"
+    },
+    "image": "expo-image",
+    "blur": "expo-blur",
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler",
+    "drawing": "react-native-skia"
+  },
+  "screens": [
+    {
+      "name": "Home",
+      "purpose": "Select between Free Art and Dot Rangoli modes, and access the saved gallery.",
+      "states": {
+        "loading": "Subtle marigold-colored spinner centered on surface.",
+        "empty": "N/A for home.",
+        "error": "Standard error prompt with retry."
+      },
+      "layout": "Large tactile choice cards for 'Free Art' and 'Dot Based' taking up primary screen real estate. Use a decorative marigold image header with gradient scrim. Bottom section for 'Recent Gallery' horizontal scroll."
+    },
+    {
+      "name": "DotGridSetup",
+      "purpose": "Configure the dot matrix (X x Y, layout style) before drawing.",
+      "states": {
+        "loading": "N/A",
+        "empty": "N/A",
+        "error": "Validation error if dimensions are too high (max 30x30)."
+      },
+      "layout": "Rendered as a Bottom Sheet over the canvas screen. Contains Segmented controls for Layout (Square, Rotated 45°, Triangle) and steppers or sliders for Rows (X) and Columns (Y). Big 'Start Drawing' primary button."
+    },
+    {
+      "name": "Canvas",
+      "purpose": "Full-bleed drawing area where the user paints or connects dots.",
+      "states": {
+        "loading": "Loading canvas engine...",
+        "empty": "Blank canvas (with or without dots).",
+        "error": "Failed to save or render."
+      },
+      "layout": "Headless canvas occupying flex: 1. A Floating Toolbar anchored at the bottom containing tool icons (Brush size, Undo, Clear, Save). A secondary floating panel for the Color Palette (pre-defined festive colors + Custom Color Wheel trigger)."
+    },
+    {
+      "name": "Gallery",
+      "purpose": "View and reload previously saved Rangolis.",
+      "states": {
+        "loading": "Staggered skeleton grid.",
+        "empty": "Hand-drawn style illustration of a courtyard with 'Your courtyard is empty. Start a Rangoli!'",
+        "error": "Unable to load gallery, with a Retry button."
+      },
+      "layout": "Masonry or 2-column grid of saved artworks. Each card shows the image, name, and date, with a subtle shadow."
+    }
+  ],
+  "images": {
+    "home_header": {
+      "url": "https://images.unsplash.com/photo-1442458017215-285b83f65851?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA0MTJ8MHwxfHNlYXJjaHwyfHxtYXJpZ29sZCUyMGZsb3dlcnN8ZW58MHx8fHwxNzkxNjk0ODE0fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Marigold flowers"
+    },
+    "free_art_card": {
+      "url": "https://images.unsplash.com/photo-1716714620140-9ed26b67e900?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA0MTJ8MHwxfHNlYXJjaHwyfHxyYW5nb2xpJTIwYXJ0fGVufDB8fHx8MTc5MTY5NDgxNHww&ixlib=rb-4.1.0&q=85",
+      "alt": "Free art rangoli"
+    },
+    "dot_mode_card": {
+      "url": "https://images.unsplash.com/photo-1605302977140-6572a4421aef?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA0MTJ8MHwxfHNlYXJjaHwxfHxyYW5nb2xpJTIwYXJ0fGVufDB8fHx8MTc5MTY5NDgxNHww&ixlib=rb-4.1.0&q=85",
+      "alt": "Geometric rangoli pattern"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Theme: Implement the UI with the 'Warm earthy courtyard' palette. No blues, purples, or generic greys. Background should be #FFF9F2.",
+    "Typography: Use Fraunces for headings and large titles, Nunito for all UI elements and buttons.",
+    "Layout - Canvas: Use a 'headless' canvas approach (likely via react-native-skia). The UI must float above it. Use heavy glassmorphism for the bottom toolbar so it stands out against the user's drawing.",
+    "Layout - Toolbar: Ensure tap targets on the floating toolbar are at least 44x44pt. It should include Brush Size, Undo, Clear, and Save.",
+    "Layout - Color Wheel: Include a predefined horizontal list of festive colors + a custom color wheel icon that opens a color picker modal/sheet.",
+    "Dot Grid Logic: Ensure the math for dot placement supports standard Square (X, Y), Rotated 45 degrees, and Triangle (staggered) layouts as requested. Allow the user to connect dots or draw freely over them.",
+    "Save Flow: When saving to gallery, prompt for a name. Save the canvas state/image so it can be viewed and reloaded later.",
+    "Use Phosphor icons. Ensure haptics fire when dropping a dot, changing colors, or toggling grid layouts."
+  ]
+}
