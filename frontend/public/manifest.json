@@ -1,0 +1,16 @@
+{
+  "name": "Rangoli Studio",
+  "short_name": "Rangoli",
+  "description": "Draw rangoli freehand or on dot grids — square, rotated 45° and triangle. Works fully offline.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF9F2",
+  "theme_color": "#D9381E",
+  "icons": [
+    { "src": "/assets/images/icon.png", "sizes": "any", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/images/adaptive-icon.png", "sizes": "any", "type": "image/png", "purpose": "maskable" }
+  ]
+}

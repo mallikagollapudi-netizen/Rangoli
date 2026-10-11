@@ -6,6 +6,14 @@ export default function Root({ children }: PropsWithChildren) {
   return (
     <html lang="en" style={{ height: "100%" }}>
       <head>
+        <title>Rangoli Studio</title>
+        <meta name="description" content="Draw rangoli freehand or on dot grids. Works fully offline, saves on your device." />
+        <meta name="theme-color" content="#D9381E" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Rangoli" />
+        <link rel="apple-touch-icon" href="/assets/images/icon.png" />
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta
