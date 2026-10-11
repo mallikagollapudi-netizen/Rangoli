@@ -35,6 +35,10 @@ jobs:
         working-directory: ./frontend
         run: npm install
 
+      - name: Initialize EAS Project
+        working-directory: ./frontend
+        run: eas init --account blahblahblah23 --non-interactive
+
       - name: Configure Expo for APK
         working-directory: ./frontend
         run: |
