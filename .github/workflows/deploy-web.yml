@@ -33,6 +33,14 @@ jobs:
         working-directory: ./frontend
         run: npx expo export --platform web
 
+      - name: Force Asset Paths to Match Repository
+        working-directory: ./frontend
+        run: |
+          sed -i 's|src="/|src="/Rangoli/|g' dist/index.html
+          sed -i 's|src="/Rangoli/Rangoli/|src="/Rangoli/|g' dist/index.html
+          sed -i 's|href="/|href="/Rangoli/|g' dist/index.html
+          sed -i 's|href="/Rangoli/Rangoli/|href="/Rangoli/|g' dist/index.html
+
       - name: Bypass Jekyll
         working-directory: ./frontend
         run: touch dist/.nojekyll
