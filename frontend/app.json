@@ -1,5 +1,6 @@
 {
   "expo": {
+    "experiments": { "baseUrl": "/Rangoli" },
     "name": "Rangoli Studio",
     "slug": "frontend",
     "version": "1.0.0",
