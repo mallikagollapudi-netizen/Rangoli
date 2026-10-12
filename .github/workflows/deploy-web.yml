@@ -31,17 +31,10 @@ jobs:
 
       - name: Build Web App
         working-directory: ./frontend
+        # Expo will automatically use the baseUrl from your app.json
         run: npx expo export --platform web
 
-      - name: Force Asset Paths to Match Repository
-        working-directory: ./frontend
-        run: |
-          sed -i 's|src="/|src="/Rangoli/|g' dist/index.html
-          sed -i 's|src="/Rangoli/Rangoli/|src="/Rangoli/|g' dist/index.html
-          sed -i 's|href="/|href="/Rangoli/|g' dist/index.html
-          sed -i 's|href="/Rangoli/Rangoli/|href="/Rangoli/|g' dist/index.html
-
-      - name: Bypass Jekyll
+      - name: Bypass Jekyll (Fixes 404 Errors)
         working-directory: ./frontend
         run: touch dist/.nojekyll
 
