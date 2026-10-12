@@ -31,8 +31,7 @@ jobs:
 
       - name: Build Web App
         working-directory: ./frontend
-        # Expo will automatically use the baseUrl from your app.json
-        run: npx expo export --platform web
+        run: EXPO_PUBLIC_BASE_PATH=/Rangoli EXPO_BASE_URL=/Rangoli npx expo export --platform web
 
       - name: Bypass Jekyll (Fixes 404 Errors)
         working-directory: ./frontend
